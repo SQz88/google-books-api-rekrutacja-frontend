@@ -28,8 +28,11 @@ new Vue({
       }
     },
     search() {
+      this.$refs.searchBox.$el.blur()
       if (this.queryApi(this.searchResults) !== false) {
         this.scrollIndex = 0
+      } else {
+        this.showSnackbar = true
       }
     },
     moreResults() {
@@ -49,7 +52,6 @@ new Vue({
             this.scrollIndex += data.data.items.length
             return cb(data.data)
           } else {
-            this.showSnackbar = true
             return false
           }
         })
@@ -70,18 +72,20 @@ new Vue({
       this.appendResults(results)
     },
     appendResults(results) {
-      Object.values(results.items).forEach(item => {
-        this.fetchedBooks.push({
-          id: item.id,
-          title: item.volumeInfo.title,
-          description: item.volumeInfo.description
-            ? item.volumeInfo.description.split(' ')
-            : null,
-          cover: item.volumeInfo.imageLinks
-            ? item.volumeInfo.imageLinks.thumbnail
-            : null
+      if (results.hasOwnProperty('items')) {
+        Object.values(results.items).forEach(item => {
+          this.fetchedBooks.push({
+            id: item.id,
+            title: item.volumeInfo.title,
+            description: item.volumeInfo.description
+              ? item.volumeInfo.description.split(' ')
+              : null,
+            cover: item.volumeInfo.imageLinks
+              ? item.volumeInfo.imageLinks.thumbnail
+              : null
+          })
         })
-      })
+      }
     }
   },
   beforeMount() {
